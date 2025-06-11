@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Neurobook Prototype</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #0f0f0f;
+      color: #f4f4f4;
+      overflow-x: hidden;
+    }
+    header {
+      padding: 2em;
+      background: #1a1a1a;
+      text-align: center;
+      font-size: 2em;
+    }
+    main {
+      padding: 2em;
+      line-height: 1.7;
+      max-width: 900px;
+      margin: auto;
+    }
+    section {
+      margin-bottom: 3em;
+      border-left: 4px solid #8ef;
+      padding-left: 1em;
+      animation: fadein 1.5s ease-in-out;
+    }
+    .interactive {
+      background: #222;
+      padding: 1em;
+      margin-top: 1em;
+      border-radius: 8px;
+    }
+    button {
+      background: #5ef;
+      border: none;
+      color: #000;
+      padding: 0.8em 1.2em;
+      margin-top: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .hidden {
+      display: none;
+    }
+    @keyframes fadein {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+  </style>
+</head>
+<body>
+  <header>🧠 Neurobook: Terraform Your Mind</header>
+  <main>
+    <section>
+      <h2>⚡ Cognitive Terraforming</h2>
+      <p>This module introduces the idea of shaping your cognitive landscape—like terraforming a mind to make it fertile for new insights. Interact to trigger rewiring pathways.</p>
+      <div class="interactive">
+        <p>Question: What outdated belief about learning have you carried?</p>
+        <input type="text" id="beliefInput" placeholder="Type your belief here..." />
+        <button onclick="reframeBelief()">Reframe It</button>
+        <p id="reframedBelief" class="hidden"></p>
+      </div>
+    </section>
+
+    <section>
+      <h2>🔁 The NeuroNarrative Loop</h2>
+      <p>Immersive learning sticks. You’ll co-author a learning loop here.</p>
+      <div class="interactive">
+        <p>Choose your path:</p>
+        <button onclick="loadNarrative('dream')">Dreamscape</button>
+        <button onclick="loadNarrative('game')">Game Simulation</button>
+        <p id="narrativeResult" class="hidden"></p>
+      </div>
+    </section>
+
+    <section>
+      <h2>📖 Knowledge as Kinetic Sculpture</h2>
+      <p>Explore a visual metaphor that builds as you interact. Each click expands your sculpture of understanding.</p>
+      <div class="interactive">
+        <button onclick="expandSculpture()">Add Insight Piece</button>
+        <div id="sculptureLog"></div>
+      </div>
+    </section>
+  </main>
+  <script>
+    function reframeBelief() {
+      const input = document.getElementById('beliefInput').value;
+      const output = document.getElementById('reframedBelief');
+      const frames = [
+        "Learning is a creative act, not a passive one.",
+        "Information is inert—until you animate it through reflection.",
+        "You don’t memorize—you metabolize meaning."
+      ];
+      const choice = frames[Math.floor(Math.random() * frames.length)];
+      output.innerHTML = `<strong>Reframe:</strong> "${choice}"`;
+      output.classList.remove('hidden');
+    }
+
+    function loadNarrative(type) {
+      const output = document.getElementById('narrativeResult');
+      const narratives = {
+        dream: "You step into a landscape of thought where each tree whispers forgotten ideas. A voice asks: What will you plant?",
+        game: "You're in a simulation where you must combine three concepts to unlock a door. The password is in your last failure."
+      };
+      output.innerText = narratives[type];
+      output.classList.remove('hidden');
+    }
+
+    function expandSculpture() {
+      const container = document.getElementById('sculptureLog');
+      const fragments = [
+        "🧩 Connected memory to emotion.",
+        "🧩 Added sensory feedback layer.",
+        "🧩 Nested analogy loop detected.",
+        "🧩 Feedback-triggered retention loop.",
+        "🧩 New neural hook formed."
+      ];
+      const piece = fragments[Math.floor(Math.random() * fragments.length)];
+      const para = document.createElement("p");
+      para.innerText = piece;
+      container.appendChild(para);
+    }
+  </script>
+</body>
+</html>
