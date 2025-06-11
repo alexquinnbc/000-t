@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Regenerative Web Codex</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #sidebar {
+      width: 25%;
+      background: #f2f2f2;
+      padding: 1rem;
+      box-sizing: border-box;
+      overflow-y: auto;
+      border-right: 1px solid #ccc;
+    }
+    #main {
+      width: 75%;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+    .node {
+      cursor: pointer;
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      background: #e0e0e0;
+      border-radius: 4px;
+    }
+    .node:hover {
+      background: #d0d0ff;
+    }
+    #content {
+      white-space: pre-wrap;
+    }
+    #controls {
+      margin-top: 1rem;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      margin-top: 0.5rem;
+    }
+    button {
+      margin: 0.25rem 0.5rem 0.25rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="sidebar">
+    <h2>Topic Map</h2>
+    <div class="node" onclick="loadTopic('preGutenberg')">Before Gutenberg</div>
+    <div class="node" onclick="loadTopic('gutenbergImpact')">Impact of Books</div>
+    <div class="node" onclick="loadTopic('webAsCodex')">Web as Codex</div>
+    <div class="node" onclick="loadTopic('regenerativeFeatures')">Regenerative Knowledge</div>
+    <div class="node" onclick="loadTopic('simulation')">Simulate Thinking Models</div>
+  </div>
+  <div id="main">
+    <h1>Regenerative Web Codex</h1>
+    <div id="content">Loading...</div>
+    <div id="controls">
+      <h3>Annotate</h3>
+      <textarea id="annotation" placeholder="Your notes here..."></textarea>
+      <button onclick="saveNote()">Save Note</button>
+      <button onclick="exportFork()">Download Fork</button>
+    </div>
+  </div>
+
+  <script>
+    const topics = {
+      preGutenberg: "📜 Before Gutenberg:\n\nKnowledge was oral, embodied, social. It relied on memory, metaphor, and proximity. Elders were libraries. Meaning was regenerated with each telling.",
+      gutenbergImpact: "📘 Gutenberg’s Revolution:\n\nEnabled mass replication and literacy, but froze knowledge. Memory externalized, feedback loops slowed. Reading became passive, linear.",
+      webAsCodex: "🌐 Websites as Living Codices:\n\nInteractive, nonlinear, multimodal. Readers become participants. Knowledge can grow, fork, be simulated. Thinking becomes collaborative.",
+      regenerativeFeatures: "🧬 Features of Regenerative Knowledge:\n\n- Living documents\n- Co-authorship\n- Embedded simulations\n- Adaptive learning trails\n- Remix & mnemonic engines",
+      simulation: "🧪 Simulation: Passive vs Active Reading\n\nImagine a text that lets you change its structure. Try reordering a section. Add your annotation. Reading becomes writing."
+    };
+
+    let currentTopic = 'preGutenberg';
+
+    function loadTopic(topicId) {
+      currentTopic = topicId;
+      document.getElementById('content').innerText = topics[topicId].replace(/\\n/g, '\n');
+      document.getElementById('annotation').value = localStorage.getItem('note-' + topicId) || '';
+    }
+
+    function saveNote() {
+      if (currentTopic) {
+        const note = document.getElementById('annotation').value;
+        localStorage.setItem('note-' + currentTopic, note);
+        alert('Note saved locally.');
+      }
+    }
+
+    function exportFork() {
+      const notes = {};
+      Object.keys(topics).forEach(key => {
+        notes[key] = localStorage.getItem('note-' + key) || '';
+      });
+
+      const exportData = {
+        topics,
+        notes
+      };
+
+      const exportBlob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(exportBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'My_Codex_Fork.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Initialize first topic
+    window.onload = function() {
+      loadTopic(currentTopic);
+    }
+  </script>
+</body>
+</html>
