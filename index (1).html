@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ultimate Prompt Generator</title>
+  <style>
+    /* === Liquid Glass Theme === */
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.15);
+      --glass-border: rgba(255, 255, 255, 0.3);
+      --glass-shadow: rgba(0, 0, 0, 0.2);
+      --accent-color: #00ffe0;
+      --font-color: #f0f0f0;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #101820, #1a1f30);
+      color: var(--font-color);
+      overflow-x: hidden;
+    }
+
+    .glass-panel {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      box-shadow: 0 4px 30px var(--glass-shadow);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 2rem;
+      margin: 2rem auto;
+      width: 90%;
+      max-width: 800px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      color: var(--accent-color);
+    }
+
+    label {
+      display: block;
+      margin: 1rem 0 0.5rem;
+    }
+
+    select, input[type="text"], button {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--font-color);
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: var(--accent-color);
+      color: #000;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #00c0a8;
+    }
+
+    .result {
+      white-space: pre-wrap;
+      margin-top: 1rem;
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 1rem;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="glass-panel">
+    <h1>Ultimate Prompt Engineering Tool</h1>
+    <label for="task">What do you want the LLM to do?</label>
+    <input type="text" id="task" placeholder="e.g., Write a story, analyze a document" />
+
+    <label for="complexity">How complex is the task?</label>
+    <select id="complexity">
+      <option value="simple">Simple (zero-shot)</option>
+      <option value="medium">Medium (few-shot, CoT)</option>
+      <option value="complex">Complex (multi-step, RAG, ReAct)</option>
+    </select>
+
+    <button onclick="generatePrompt()">Generate Prompt</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function generatePrompt() {
+      const task = document.getElementById('task').value;
+      const complexity = document.getElementById('complexity').value;
+
+      let techniques = [];
+      if (complexity === 'simple') {
+        techniques = ['Zero-shot Prompting'];
+      } else if (complexity === 'medium') {
+        techniques = ['Few-shot Prompting', 'Chain-of-Thought Prompting'];
+      } else {
+        techniques = ['Prompt Chaining', 'ReAct', 'RAG', 'Tree of Thoughts'];
+      }
+
+      const resultBox = document.getElementById('result');
+      resultBox.innerHTML = `🎯 Task: ${task}
+🧠 Recommended Techniques: ${techniques.join(', ')}
+
+📝 Example Prompt:
+"${task}. Please respond using ${techniques[0]} strategy for optimal results."`;
+    }
+  </script>
+</body>
+</html>
