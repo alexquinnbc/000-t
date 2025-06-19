@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UX/UI Pattern Guide</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    .accordion {
+      background-color: #fff;
+      border-radius: 6px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+    }
+    .accordion-item {
+      border-top: 1px solid #ddd;
+    }
+    .accordion-header {
+      padding: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      background: #f1f1f1;
+      transition: background 0.3s;
+    }
+    .accordion-header:hover {
+      background: #e0e0e0;
+    }
+    .accordion-body {
+      display: none;
+      padding: 1rem;
+      border-top: 1px solid #ccc;
+      background: #fff;
+    }
+    .accordion-body ul {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+    .accordion-body ul li {
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>UX/UI Pattern Guide</h1>
+
+    <div class="accordion">
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Onboarding & First-Time User Experience (FTUE)
+        </div>
+        <div class="accordion-body">
+          <ul>
+            <li>- Progressive Disclosure</li><li>- Guided Tours / Coach Marks</li><li>- Empty State with CTA</li><li>- Inline Hints / Tooltips</li><li>- Optional Skip Button</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="accordion">
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Complex Task Flows (Forms, Multi-Step)
+        </div>
+        <div class="accordion-body">
+          <ul>
+            <li>- Step-by-Step Wizards</li><li>- Inline Validation</li><li>- Progress Indicators</li><li>- Autosave Drafts</li><li>- Breadcrumb Navigation</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="accordion">
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Search and Discovery
+        </div>
+        <div class="accordion-body">
+          <ul>
+            <li>- Autocomplete with Suggestions</li><li>- Faceted Filters</li><li>- Infinite Scroll or Pagination</li><li>- Card or Grid Layouts</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="accordion">
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Dashboards or Data Interfaces
+        </div>
+        <div class="accordion-body">
+          <ul>
+            <li>- Modular Cards with KPIs</li><li>- Grid Layouts</li><li>- Quick Actions on Hover/Tap</li><li>- Collapsible Panels</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="accordion">
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Mobile-First Interfaces
+        </div>
+        <div class="accordion-body">
+          <ul>
+            <li>- Bottom Navigation</li><li>- Floating Action Buttons (FAB)</li><li>- Swipe Gestures with Undo</li><li>- Content Over Chrome</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="accordion">
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Content-Heavy or Learning Interfaces
+        </div>
+        <div class="accordion-body">
+          <ul>
+            <li>- Sticky TOC</li><li>- In-Content Progress Bar</li><li>- Scroll-Based Highlights</li><li>- Contextual Popovers</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+<script>
+  function toggleAccordion(element) {
+    const body = element.nextElementSibling;
+    body.style.display = body.style.display === "block" ? "none" : "block";
+  }
+</script>
+</body>
+</html>
