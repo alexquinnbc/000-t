@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Studio</title>
+  <style>
+    /* BEM-styled CSS for modularity and responsiveness */
+    :root {
+      --primary-color: #2c3e50;
+      --accent-color: #3498db;
+      --text-color: #333;
+      --bg-color: #f5f5f5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+    }
+    .studio__header {
+      background: var(--primary-color);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    .studio__canvas {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: clamp(1rem, 5vw, 2rem);
+      overflow-y: auto;
+    }
+    .studio__component {
+      background: white;
+      border: 2px solid var(--accent-color);
+      padding: 1rem;
+      cursor: move;
+      user-select: none;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      transform-origin: center;
+    }
+    .studio__component--dragging { opacity: 0.5; transform: scale(1.05); }
+    .studio__component--success { animation: glow 1s ease-in-out; }
+    .studio__prompt-area {
+      background: white;
+      border: 1px solid var(--primary-color);
+      padding: 1rem;
+      margin-top: 1rem;
+      min-height: 100px;
+    }
+    .studio__feedback {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #e8f4f8;
+      border-left: 4px solid var(--accent-color);
+    }
+    .studio__diagnostics {
+      display: none;
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 0.5rem;
+      font-size: 0.8rem;
+    }
+    .studio__diagnostics--active { display: block; }
+    .studio__button {
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .studio__button:hover { transform: scale(1.05); }
+    .studio__tutorial {
+      margin: 1rem;
+      padding: 1rem;
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+    }
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 0 rgba(52, 152, 219, 0); }
+      50% { box-shadow: 0 0 10px rgba(52, 152, 219, 0.8); }
+    }
+    /* Responsive design */
+    @media (min-width: 768px) {
+      .studio__canvas { flex-direction: row; flex-wrap: wrap; }
+      .studio__component { flex: 1 1 200px; max-width: 300px; }
+      .studio__prompt-area { flex: 1 1 100%; }
+    }
+    @media (min-width: 1200px) {
+      .studio__canvas { gap: 2rem; }
+      .studio__component { flex: 1 1 250px; }
+    }
+    /* Accessibility */
+    [aria-grabbed="true"] { outline: 2px solid #000; }
+    .studio__component:focus { outline: 2px solid var(--accent-color); }
+  </style>
+</head>
+<body>
+  <!-- Readme -->
+  <details>
+    <summary>Prompt Studio Documentation</summary>
+    <h1>Prompt Studio</h1>
+    <p><strong>Purpose</strong>: Transform users into prompt engineering maestros by providing an intuitive canvas to create, edit, and refine LLM prompts using drag-and-drop components. The app teaches techniques like chain-of-thought and few-shot prompting through real-time feedback and an embedded tutorial.</p>
+    <p><strong>Usage</strong>: Open in Chrome, Safari, Firefox, or Edge (Jan 2024+). Drag components to build prompts, test them, and save to localStorage. No internet required.</p>
+    <p><strong>Browser Compatibility</strong>:
+      <ul>
+        <li>Chrome: 120+</li>
+        <li>Safari: 17+</li>
+        <li>Firefox: 115+</li>
+        <li>Edge: 120+</li>
+      </ul>
+    </p>
+    <p><strong>Features</strong>:
+      <ul>
+        <li>Drag-and-drop prompt components (context, task, constraints).</li>
+        <li>Real-time feedback with simulated LLM responses.</li>
+        <li>Embedded tutorial for prompt engineering basics.</li>
+        <li>Diagnostics console (Ctrl+Shift+D) for FPS and prompt success rate.</li>
+      </ul>
+    </p>
+    <p><strong>Limitations</strong>:
+      <ul>
+        <li>Simulated LLM responses are basic and not as nuanced as real LLMs.</li>
+        <li>Animations may degrade on low-end devices.</li>
+      </ul>
+    </p>
+    <p><strong>Run Tests</strong>: Press Ctrl+Shift+T to view test results in console.</p>
+  </details>
+
+  <!-- Header -->
+  <header class="studio__header" role="banner">
+    <h1>Prompt Studio</h1>
+    <p>Master prompt engineering with an interactive canvas</p>
+  </header>
+
+  <!-- Tutorial -->
+  <section class="studio__tutorial" role="region" aria-label="Tutorial">
+    <h2>Welcome to Prompt Studio!</h2>
+    <p>Drag components (Context, Task, Constraints) to the canvas to build a prompt. Test it to get feedback and refine. Try this: "Context: You are a historian. Task: Explain the fall of Rome in 3 sentences. Constraints: Use simple language." Save prompts with Ctrl+S.</p>
+    <button class="studio__button" onclick="hideTutorial()">Got it!</button>
+  </section>
+
+  <!-- Main Canvas -->
+  <main class="studio__canvas" role="main" aria-label="Prompt Canvas">
+    <div class="studio__component" draggable="true" data-type="context" tabindex="0" aria-grabbed="false" role="button" aria-label="Context Component">Context</div>
+    <div class="studio__component" draggable="true" data-type="task" tabindex="0" aria-grabbed="false" role="button" aria-label="Task Component">Task</div>
+    <div class="studio__component" draggable="true" data-type="constraints" tabindex="0" aria-grabbed="false" role="button" aria-label="Constraints Component">Constraints</div>
+    <div class="studio__prompt-area" contenteditable="true" aria-label="Prompt Composition Area" role="textbox"></div>
+    <div class="studio__feedback" aria-live="polite"></div>
+    <button class="studio__button" onclick="testPrompt()">Test Prompt</button>
+    <button class="studio__button" onclick="savePrompt()">Save Prompt (Ctrl+S)</button>
+  </main>
+
+  <!-- Diagnostics Console -->
+  <aside class="studio__diagnostics" id="diagnostics" role="complementary" aria-label="Diagnostics Console">
+    <p>FPS: <span id="fps">0</span></p>
+    <p>Prompt Success Rate: <span id="success-rate">0%</span></p>
+  </aside>
+
+  <!-- Embedded SVG Asset (Base64) -->
+  <svg style="display:none" id="icon-context">
+    <defs>
+      <symbol id="context-icon" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <script>
+    // Modular JavaScript (IIFE for encapsulation)
+    (function PromptStudio() {
+      // State
+      const state = {
+        prompt: [],
+        testsRun: 0,
+        testsPassed: 0,
+        lastFrameTime: performance.now(),
+        fps: 0
+      };
+
+      // DOM Elements
+      const canvas = document.querySelector('.studio__canvas');
+      const promptArea = document.querySelector('.studio__prompt-area');
+      const feedback = document.querySelector('.studio__feedback');
+      const diagnostics = document.querySelector('#diagnostics');
+      const fpsDisplay = document.querySelector('#fps');
+      const successRate = document.querySelector('#success-rate');
+
+      // Drag-and-Drop
+      canvas.addEventListener('dragstart', (e) => {
+        if (e.target.classList.contains('studio__component')) {
+          e.target.classList.add('studio__component--dragging');
+          e.target.setAttribute('aria-grabbed', 'true');
+          e.dataTransfer.setData('text/plain', e.target.dataset.type);
+        }
+      });
+      canvas.addEventListener('dragend', (e) => {
+        if (e.target.classList.contains('studio__component')) {
+          e.target.classList.remove('studio__component--dragging');
+          e.target.setAttribute('aria-grabbed', 'false');
+        }
+      });
+      canvas.addEventListener('dragover', (e) => e.preventDefault());
+      canvas.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const type = e.dataTransfer.getData('text/plain');
+        state.prompt.push(type);
+        updatePrompt();
+      });
+
+      // Update Prompt Display
+      function updatePrompt() {
+        promptArea.textContent = state.prompt.map((type, i) => `${i + 1}. ${type}: `).join('\n');
+        promptArea.focus();
+      }
+
+      // Simulate LLM Response (Basic)
+      function testPrompt() {
+        const text = promptArea.textContent.trim();
+        state.testsRun++;
+        const isValid = text.includes('Context') && text.includes('Task');
+        if (isValid) {
+          state.testsPassed++;
+          feedback.textContent = 'Prompt is well-structured! Try refining constraints for clarity.';
+          promptArea.classList.add('studio__component--success');
+          setTimeout(() => promptArea.classList.remove('studio__component--success'), 1000);
+        } else {
+          feedback.textContent = 'Prompt needs Context and Task. Add components and try again.';
+        }
+        updateDiagnostics();
+      }
+
+      // Save Prompt to localStorage
+      function savePrompt() {
+        localStorage.setItem('promptStudio', promptArea.textContent);
+        feedback.textContent = 'Prompt saved!';
+      }
+
+      // Diagnostics and FPS Counter
+      function updateDiagnostics() {
+        const now = performance.now();
+        state.fps = Math.round(1000 / (now - state.lastFrameTime));
+        state.lastFrameTime = now;
+        fpsDisplay.textContent = state.fps;
+        successRate.textContent = state.testsRun ? Math.round((state.testsPassed / state.testsRun) * 100) + '%' : '0%';
+        requestAnimationFrame(updateDiagnostics);
+      }
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+          diagnostics.classList.toggle('studio__diagnostics--active');
+        }
+        if (e.ctrlKey && e.key === 's') {
+          e.preventDefault();
+          savePrompt();
+        }
+        if (e.ctrlKey && e.shiftKey && e.key === 'T') {
+          runTests();
+        }
+      });
+
+      // Hide Tutorial
+      function hideTutorial() {
+        document.querySelector('.studio__tutorial').style.display = 'none';
+      }
+
+      // Embedded Tests (Simple QUnit-like)
+      function runTests() {
+        const tests = [
+          {
+            name: 'Prompt includes Context',
+            test: () => state.prompt.includes('context')
+          },
+          {
+            name: 'Prompt includes Task',
+            test: () => state.prompt.includes('task')
+          }
+        ];
+        console.log('Running Tests...');
+        tests.forEach(t => console.log(`${t.name}: ${t.test() ? 'PASS' : 'FAIL'}`));
+      }
+
+      // Initialize
+      updateDiagnostics();
+    })();
+  </script>
+</body>
+</html>
